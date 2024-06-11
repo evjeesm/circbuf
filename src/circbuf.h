@@ -11,47 +11,41 @@ typedef vector_t circbuf_t;
 typedef struct
 {
     size_t initial_cap; /* in bytes */
-    vector_error_callback_t error_callback;
-    vector_error_t *error_out;
 }
 circbuf_opts_t;
 
+typedef vector_status_t circbuf_status_t;
 
-#define circbuf_create(buf_ptr, ...) \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Woverride-init\"") \
-    circbuf_create_(&buf_ptr, &(circbuf_opts_t){ \
+
+#define circbuf_create(...) \
+    circbuf_create_(&(circbuf_opts_t){ \
         .initial_cap = 1024, \
-        .error_callback = vector_default_error_callback, \
         __VA_ARGS__ \
-    }); \
-    _Pragma("GCC diagnostic pop")
+    })
 
-
-#define circbuf_create_errhdl(buf_ptr, error_ptr, ...) do{\
-    *error_ptr = DYNARR_NO_ERROR; \
-    circbuf_create(buf_ptr, \
-        .error_callback = vector_manual_error_callback, \
-        .error_out = error_ptr, \
-        __VA_ARGS__ \
-    )} while (0)
 
 /*
 * Create circbuf according to opts.
 */
-void circbuf_create_(circbuf_t **const circbuf, const circbuf_opts_t *const opts);
+circbuf_t *circbuf_create_(const circbuf_opts_t *const opts);
 
 
 /*
 * Makes a copy of the circbuf.
 */
-circbuf_t *circbuf_clone(circbuf_t *const circbuf);
+circbuf_t *circbuf_clone(const circbuf_t *const circbuf);
 
 
 /*
 * Free resources of the circbuf.
 */
 void circbuf_destroy(circbuf_t *const circbuf);
+
+
+/*
+* Adjust circbuf capacity.
+*/
+circbuf_status_t circbuf_resize(circbuf_t **const circbuf, const size_t capacity);
 
 
 /*

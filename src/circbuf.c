@@ -3,6 +3,8 @@
 #include <assert.h> /* asserts */
 #include <string.h> /* memcpy */
 
+#define WORDSIZE sizeof(size_t)
+
 typedef struct
 {
     size_t read;
@@ -22,32 +24,60 @@ static circbuf_header_t *get_circbuf_header(const circbuf_t *const circbuf);
 * === API Implementation   === *
 **                            */
 
-void circbuf_create_(circbuf_t **const circbuf, const circbuf_opts_t *const opts)
+circbuf_t *circbuf_create_(const circbuf_opts_t *const opts)
 {
-    assert(circbuf);
     assert(opts);
     assert(opts->initial_cap);
 
-    vector_create(*circbuf,
+    circbuf_t *circbuf = vector_create(
         .data_offset = sizeof(circbuf_header_t),
         .element_size = 1,
         .initial_cap = opts->initial_cap + 1,
-        .error_callback = opts->error_callback,
-        .error_out = opts->error_out
     );
 
-    if (NULL == *circbuf) return;
+    if (!circbuf) return NULL;
 
-    circbuf_header_t *header = get_circbuf_header(*circbuf);
+    circbuf_header_t *header = get_circbuf_header(circbuf);
     *header = (circbuf_header_t) {0};
+
+    return circbuf;
 }
 
 
-circbuf_t *circbuf_clone(circbuf_t *const circbuf)
+circbuf_t *circbuf_clone(const circbuf_t *const circbuf)
 {
     assert(circbuf);
 
     return vector_clone(circbuf);
+}
+
+
+circbuf_status_t circbuf_resize(circbuf_t **const circbuf, const size_t capacity)
+{
+    assert(circbuf && *circbuf);
+    assert(circbuf_avail_to_read(*circbuf) <= capacity && "Discarding unread data by shrinking capacity!");
+
+    const circbuf_header_t *header = get_circbuf_header(*circbuf);
+    const size_t element_size = vector_element_size(*circbuf);
+
+    circbuf_t *new = vector_create(
+        .element_size = element_size,
+        .initial_cap = capacity + 1
+    );
+
+    if (!new) return VECTOR_ALLOC_ERROR;
+
+    char buff[WORDSIZE];
+    size_t available;
+    while ((available = circbuf_avail_to_read(*circbuf)))
+    {
+        size_t to_read = WORDSIZE > available ? available : WORDSIZE;
+        size_t bytes = circbuf_read(*circbuf, to_read, buff);
+        circbuf_write(new, bytes, buff);
+    }
+
+    *circbuf = new;
+    return VECTOR_SUCCESS;
 }
 
 
@@ -197,7 +227,7 @@ size_t circbuf_skip(circbuf_t *const circbuf, const size_t size)
         header->read = (header->read + length) % bufsize;
         return length;
     }
-    
+
     /* split case */
     size_t length = bufsize - header->read;
     if (length >= size)
@@ -221,3 +251,4 @@ static circbuf_header_t *get_circbuf_header(const circbuf_t *const circbuf)
 {
     return (circbuf_header_t*) vector_get_ext_header(circbuf);
 }
+

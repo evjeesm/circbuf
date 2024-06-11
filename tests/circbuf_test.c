@@ -8,7 +8,7 @@ static circbuf_t *circbuf;
 
 static void setup_empty(void)
 {
-    circbuf_create(circbuf, .initial_cap = 10);
+    circbuf = circbuf_create(.initial_cap = 10);
 }
 
 static void teardown(void)
