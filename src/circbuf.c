@@ -29,8 +29,8 @@ circbuf_t *circbuf_create_(const circbuf_opts_t *const opts)
     assert(opts);
     assert(opts->initial_cap);
 
-    circbuf_t *circbuf = vector_create(
-        .data_offset = sizeof(circbuf_header_t),
+    circbuf_t *circbuf = vector_create (
+        .ext_header_size = sizeof(circbuf_header_t),
         .element_size = 1,
         .initial_cap = opts->initial_cap + 1,
     );
