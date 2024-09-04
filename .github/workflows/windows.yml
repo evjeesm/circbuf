@@ -1,0 +1,74 @@
+name: Windows MSYS2 CI
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: ucrt64
+        update: true
+        install: >-
+          curl
+          git
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-check
+          autotools
+          autoconf-archive
+          lcov
+
+    - run: git config --global core.autocrlf input
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Pull & update submodules recursively
+      run: |
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
+
+    - name: Regenerate build files
+      run: ./autogen.sh
+
+    - name: configure
+      run: ./configure CFLAGS='-Wall -Wextra -Wno-override-init -O0 --coverage' --enable-code-coverage
+
+    - name: Install dependencies
+      run: make
+
+    - name: Run check
+      run: make check-code-coverage
+
+# NO valgrind support on windows,
+# TODO: will try to use Dr. Memory, but it's not included in msys2.
+
+    # - name: Run valgrind check
+    #   run: make check-valgrind
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        flags: windows
+        name:  Windows MSYS2 CI
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Archive test logs
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: check-logs
+        path: |
+          *.log
+          tests/*.log
+        retention-days: 5
+
+    - name: Run distcheck
+      run: make distcheck

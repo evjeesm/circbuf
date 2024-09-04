@@ -1,0 +1,26 @@
+name: Cross-platform CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  call-linux:
+    uses: ./.github/workflows/linux.yml
+    secrets: inherit
+  call-windows:
+    uses: ./.github/workflows/windows.yml
+    secrets: inherit
+  call-doxygen-gh-pages:
+    needs: [call-linux, call-windows]
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/doxygen-gh-pages.yml
+    secrets: inherit
+  call-tag-files:
+    needs: [call-doxygen-gh-pages]
+    uses: ./.github/workflows/tag-files.yml
+    with:
+      url: https://evjeesm.github.io/
+    secrets: inherit

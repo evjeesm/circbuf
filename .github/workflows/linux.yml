@@ -1,0 +1,58 @@
+name: Linux Debian CI
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: autoconf-archive valgrind check lcov
+        version: 1.0
+
+    - name: Pull & update submodules recursively
+      run: |
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
+
+    - name: Regenerate build files
+      run: ./autogen.sh
+
+    - name: configure
+      run: ./configure CFLAGS='-Wall -Wextra -Wno-override-init -O0 --coverage' --enable-code-coverage
+
+    - name: Install dependencies
+      run: make
+
+    - name: Run check
+      run: make check-code-coverage
+
+    - name: Run valgrind check
+      run: make check-valgrind
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        flags: debian
+        name:  Linux Debian CI
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Archive test logs
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: check-logs
+        path: |
+          *.log
+          tests/*.log
+        retention-days: 5
+
+    - name: Run distcheck
+      run: make distcheck
