@@ -11,3 +11,5 @@
 !.clangd
 !autogen.sh
 config.h
+
+aminclude_static.am
