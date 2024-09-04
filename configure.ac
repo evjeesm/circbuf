@@ -14,13 +14,14 @@ AX_VALGRIND_CHECK
 # unique source file -- primitive safety check
 AC_CONFIG_SRCDIR([src/circbuf.c])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.11.2])
+AM_INIT_AUTOMAKE([-Wall -Wportability foreign 1.11.2])
 
 
 # Checks for programs.
 AM_PROG_AR
 LT_INIT
 AC_PROG_CC
+AC_PROG_AWK
 
 # Checks for libraries.
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.6])
@@ -37,6 +38,8 @@ AC_TYPE_SSIZE_T
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove memset])
+
+AX_CODE_COVERAGE
 
 # Output files 
 AC_CONFIG_HEADERS([config.h])
