@@ -1,7 +1,22 @@
 *
 
-!src/
-!tests/
+# submodules
+!.gitmodules
+!vector
+!docs/doxygen-awesome-css
+
+# documentation
+!docs
+!doxyconf
+!header.html
+!*.dox
+!*.css
+
+!src
+!tests
+!examples
+!imgs
+!*.svg
 !*.c
 !*.h
 !*.am
