@@ -10,6 +10,8 @@ typedef vector_t circbuf_t;
 
 typedef struct
 {
+    alloc_opts_t alloc_opts;
+    size_t ext_header_size;
     size_t initial_cap; /* in bytes */
 }
 circbuf_opts_t;

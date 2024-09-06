@@ -7,6 +7,7 @@
 
 typedef struct
 {
+    size_t ext_header_size;
     size_t read;
     size_t write;
 }
@@ -30,7 +31,8 @@ circbuf_t *circbuf_create_(const circbuf_opts_t *const opts)
     assert(opts->initial_cap);
 
     circbuf_t *circbuf = vector_create (
-        .ext_header_size = sizeof(circbuf_header_t),
+        .alloc_opts = opts->alloc_opts,
+        .ext_header_size = sizeof(circbuf_header_t) + opts->ext_header_size,
         .element_size = 1,
         .initial_cap = opts->initial_cap + 1,
     );
@@ -38,7 +40,9 @@ circbuf_t *circbuf_create_(const circbuf_opts_t *const opts)
     if (!circbuf) return NULL;
 
     circbuf_header_t *header = get_circbuf_header(circbuf);
-    *header = (circbuf_header_t) {0};
+    *header = (circbuf_header_t) {
+        .ext_header_size = opts->ext_header_size,
+    };
 
     return circbuf;
 }
@@ -60,7 +64,9 @@ circbuf_status_t circbuf_resize(circbuf_t **const circbuf, const size_t capacity
     const circbuf_header_t *header = get_circbuf_header(*circbuf);
     const size_t element_size = vector_element_size(*circbuf);
 
-    circbuf_t *new = vector_create(
+    circbuf_t *new = vector_create (
+        .alloc_opts = vector_alloc_opts(*circbuf),
+        .ext_header_size = header->ext_header_size,
         .element_size = element_size,
         .initial_cap = capacity + 1
     );
