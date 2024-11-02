@@ -1,9 +1,10 @@
 var NAVTREEINDEX0 =
 {
-"circbuf_8c_source.html":[6,0,0,0],
-"circbuf_8h_source.html":[6,0,0,1],
-"dir_68267d1309a1af8e8297ef4c3efbcdba.html":[6,0,0],
-"files.html":[6,0],
+"Guide.html":[6],
+"circbuf_8c_source.html":[7,0,0,0],
+"circbuf_8h_source.html":[7,0,0,1],
+"dir_68267d1309a1af8e8297ef4c3efbcdba.html":[7,0,0],
+"files.html":[7,0],
 "index.html":[],
 "index.html#autotoc_md1":[0],
 "index.html#autotoc_md10":[5,0],

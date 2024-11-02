@@ -37,6 +37,7 @@ var NAVTREE =
     [ "Usage", "index.html#autotoc_md9", [
       [ "Minimal Example", "index.html#autotoc_md10", null ]
     ] ],
+    [ "📘 Guide", "https://evjeesm.github.io/vector/Guide.html", null ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
     ] ]
@@ -45,7 +46,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"circbuf_8c_source.html"
+"Guide.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
