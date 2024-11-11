@@ -200,7 +200,7 @@ size_t circbuf_write(circbuf_t *const circbuf, const size_t size, void *const in
     size_t length = bufsize - header->write;
     if (length >= size)
     {
-        memcpy(vector_get(circbuf, header->write), in, length);
+        memcpy(vector_get(circbuf, header->write), in, size);
         header->write = (header->write + size) % bufsize;
         return size;
     }
