@@ -305,7 +305,7 @@ $(function(){initNavTree('circbuf_8c_source.html',''); initResizable(true); });
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">size_t</span> length = bufsize - header-&gt;write;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">if</span> (length &gt;= size)</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    {</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        memcpy(<a class="code hl_functionRef" href="https://evjeesm.github.io/vector/group__Elements.html#ga9437d9506a3b2799f595c88b82f160b3">vector_get</a>(circbuf, header-&gt;write), in, length);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        memcpy(<a class="code hl_functionRef" href="https://evjeesm.github.io/vector/group__Elements.html#ga9437d9506a3b2799f595c88b82f160b3">vector_get</a>(circbuf, header-&gt;write), in, size);</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        header-&gt;write = (header-&gt;write + size) % bufsize;</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordflow">return</span> size;</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    }</div>
